@@ -1,0 +1,66 @@
+
+cd ~/mmplanllm_release # change dir to where we want to run scripts
+
+MASTER_PORT=$(shuf -n 1 -i 10000-65535)
+
+torchrun --nnodes 1 --nproc_per_node 1 --master_port $MASTER_PORT src/main.py \
+    --run_name mmplanllm_llama2 \
+    --project_name mmplanllm \
+    --base_model 'meta-llama/Llama-2-7b-hf' \
+    --ckpt_path /path/to/your/model \
+    --overwrite_output_dir True \
+    --data_path /data/dmgc.silva/datasets/ \
+    --dataset_type plangpt_dataset \
+    --dataset_name plangpt_dataset_3.1 \
+    --num_train_epochs 1 \
+    --per_device_train_batch_size 4 \
+    --per_device_eval_batch_size 4 \
+    --gradient_accumulation_steps 4 \
+    --evaluation_strategy no \
+    --eval_steps 500 \
+    --save_strategy steps \
+    --save_steps 500 \
+    --max_steps 2000 \
+    --save_total_limit 10000 \
+    --warmup_steps 100 \
+    --learning_rate 0.0005 \
+    --lr_step_size 400 \
+    --lr_num_cycles 10 \
+    --weight_decay 0.0 \
+    --warmup_ratio 0.03 \
+    --adam_beta1 0.9 \
+    --adam_beta2 0.95 \
+    --adam_epsilon 1e-8 \
+    --max_grad_norm 1.0 \
+    --lr_scheduler_type "constant" \
+    --logging_steps 5 \
+    --seq_max_length 30 \
+    --perpetual False \
+    --report_to_wandb True \
+    --infer_checkpoints True \
+    --infer_file "infer_checkpoint.sh" \
+    --load_dtype BF16 \
+    --load_in_8bits False \
+    --mixed_precision BF16 \
+    --warmup_before_inference 0 \
+    --reload_optimizer False \
+    --parallel_type NO \
+    --use_half False \
+    --lora True \
+    --lora_alpha 8 \
+    --lora_rank 4 \
+    --lora_dropout 0.1 \
+    --debug False \
+    --dataset_kwargs "{'feature_extractor_model': 'openai/clip-vit-large-patch14', 'context_size': 3, 'max_len':800, 'only_visual': True, 'only_text': False, 'n_adjacent_frames': 2 }" \
+    --freeze_emb False \
+    --use_pos_emb True \
+    --freeze_lm False \
+    --freeze_vm True \
+    --text_decoder 'meta-llama/Llama-2-7b-hf' \
+    --visual_encoder "openai/clip-vit-large-patch14" \
+    --n_visual_tokens 1 \
+    --image_embed_dropout_prob 0.0 \
+    --shared_emb_dim 512 \
+    --text_embed_dropout_prob 0.1 \
+    --ret_loss_scale 1.0 \
+    --cap_loss_scale 1.0
